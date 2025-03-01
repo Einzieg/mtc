@@ -16,7 +16,7 @@
 uv add git+https://github.com/NakanoSanku/mtc
 # 选择性安装
 # 仅安装minitouch方案
-uv add git+https://github.com/NakanoSanku/mtc#subdirectory=msc-minitouch
+uv add git+https://github.com/NakanoSanku/mtc#subdirectory=mtc-minitouch
 ```
 
 ## 🛠️ 实现方案对比
