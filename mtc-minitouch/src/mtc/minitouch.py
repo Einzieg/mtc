@@ -128,7 +128,9 @@ class MiniTouch(Touch):
         self.__window_size = self.__adb.window_size()
         self.__width = self.__window_size.width
         self.__height = self.__window_size.height
-        logger.debug(f"\n屏幕方向:{self.__orientation}\n屏幕宽度:{self.__width}\n屏幕高度:{self.__height}")
+        logger.debug(
+            f"\n屏幕方向:{self.__orientation}\n屏幕宽度:{self.__width}\n屏幕高度:{self.__height}"
+        )
 
     def __minitouch_install(self):
         self.__adb.sync.push(

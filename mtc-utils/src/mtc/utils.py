@@ -1,5 +1,6 @@
 import time
 
+
 class CommandBuilder(object):
     """Build command str for minitouch.
 
@@ -62,6 +63,7 @@ class CommandBuilder(object):
         """clear current commands (_content)"""
         self._content = ""
         self._delay = 0
+
 
 def str2byte(content):
     """compile str to byte"""

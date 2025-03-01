@@ -3,9 +3,8 @@ from typing import List, Tuple
 
 
 class Touch(ABC):
-
     @abstractmethod
-    def click(self, x:int,y:int, duration: int = 100):
+    def click(self, x: int, y: int, duration: int = 100):
         """
         点击某个坐标点
         :param x: x

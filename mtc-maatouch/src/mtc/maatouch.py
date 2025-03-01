@@ -145,6 +145,6 @@ class MaaTouch(Touch):
         return self.__swipe(points, duration=duration / len(points))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     touch = MaaTouch("127.0.0.1:16384")
     touch.click(100, 100, 10000)
