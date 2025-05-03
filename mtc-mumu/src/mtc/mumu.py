@@ -60,22 +60,17 @@ class MuMuTouch(Touch):
         self.width, self.height = width.value, height.value
 
     def click(self, x: int, y: int, duration: int = 100):
-        x, y = self.xy_change(x, y)
         self.nemu.input_event_touch_down(self.handle, self.display_id, x, y)
         time.sleep(duration / 1000)
         self.nemu.input_event_touch_up(self.handle, self.display_id)
 
     def swipe(self, points: List[Tuple[int, int]], duration: int = 500):
         for point in points:
-            x, y = self.xy_change(point[0], point[1])
+            x, y = point
             self.nemu.input_event_touch_down(self.handle, self.display_id, x, y)
             time.sleep(duration / len(points) / 1000)
         self.nemu.input_event_touch_up(self.handle, self.display_id)
 
-    def xy_change(self, x, y):
-        x, y = int(x), int(y)
-        x, y = self.height - y, x
-        return x, y
 
     def __del__(self):
         self.nemu.disconnect(self.handle)
