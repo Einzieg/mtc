@@ -1,4 +1,4 @@
-import time
+import asyncio
 
 
 class CommandBuilder(object):
@@ -50,13 +50,13 @@ class CommandBuilder(object):
         """add minitouch command: 'm <contact_id> <x> <y> <pressure>\n'"""
         self.append("m {} {} {} {}".format(contact_id, x, y, pressure))
 
-    def publish(self, connection):
+    async def publish(self, connection):
         """apply current commands (_content), to your device"""
         self.commit()
         final_content = self._content
         # logger.info("send operation: {}".format(final_content.replace("\n", "\\n")))
         connection.send(final_content)
-        time.sleep(self._delay / 1000)
+        await asyncio.sleep(self._delay / 1000)
         self.reset()
 
     def reset(self):

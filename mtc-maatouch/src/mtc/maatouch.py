@@ -69,7 +69,7 @@ class MaaTouch(Touch):
         self._maatouch_stream.sendall(byte_content)
         return self._maatouch_stream.recv(self.DEFAULT_BUFFER_SIZE)
 
-    def __tap(self, points, pressure=100, duration=None, no_up=None):
+    async def __tap(self, points, pressure=100, duration=None, no_up=None):
         """
         tap on screen, with pressure/duration
 
@@ -97,9 +97,9 @@ class MaaTouch(Touch):
             for each_id in range(len(points)):
                 _builder.up(each_id)
 
-        _builder.publish(self)
+        await _builder.publish(self)
 
-    def __swipe(self, points, pressure=100, duration=None, no_down=None, no_up=None):
+    async def __swipe(self, points, pressure=100, duration=None, no_down=None, no_up=None):
         """
         swipe between points, one by one
 
@@ -119,7 +119,7 @@ class MaaTouch(Touch):
         if not no_down:
             x, y = points.pop(0)
             _builder.down(point_id, x, y, pressure)
-            _builder.publish(self)
+            await _builder.publish(self)
 
         # start swiping
         for each_point in points:
@@ -131,18 +131,18 @@ class MaaTouch(Touch):
                 _builder.wait(duration)
             _builder.commit()
 
-        _builder.publish(self)
+        await _builder.publish(self)
 
         # release
         if not no_up:
             _builder.up(point_id)
-            _builder.publish(self)
+            await _builder.publish(self)
 
-    def click(self, x: int, y: int, duration: int = 100):
-        return self.__tap([(x, y)], duration=duration)
+    async def click(self, x: int, y: int, duration: int = 100):
+        return await self.__tap([(x, y)], duration=duration)
 
-    def swipe(self, points: list, duration: int = 500):
-        return self.__swipe(points, duration=duration / len(points))
+    async def swipe(self, points: list, duration: int = 500):
+        return await self.__swipe(points, duration=duration / len(points))
 
 
 if __name__ == "__main__":
