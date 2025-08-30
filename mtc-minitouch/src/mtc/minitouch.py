@@ -152,7 +152,7 @@ class MiniTouch(Touch):
         # 终止minitouch服务
         self.__kill_minitouch_server()
 
-    def __tap(self, points, pressure=100, duration=None, no_up=None):
+    async def __tap(self, points, pressure=100, duration=None, no_up=None):
         """
         tap on screen, with pressure/duration
 
@@ -181,9 +181,9 @@ class MiniTouch(Touch):
             for each_id in range(len(points)):
                 _builder.up(each_id)
 
-        _builder.publish(self)
+        await _builder.publish(self)
 
-    def __swipe(self, points, pressure=100, duration=None, no_down=None, no_up=None):
+    async def __swipe(self, points, pressure=100, duration=None, no_down=None, no_up=None):
         """
         swipe between points, one by one
 
@@ -204,7 +204,7 @@ class MiniTouch(Touch):
         if not no_down:
             x, y = points.pop(0)
             _builder.down(point_id, x, y, pressure)
-            _builder.publish(self)
+            await _builder.publish(self)
 
         # start swiping
         for each_point in points:
@@ -216,12 +216,12 @@ class MiniTouch(Touch):
                 _builder.wait(duration)
             _builder.commit()
 
-        _builder.publish(self)
+        await _builder.publish(self)
 
         # release
         if not no_up:
             _builder.up(point_id)
-            _builder.publish(self)
+            await _builder.publish(self)
 
     def __convert(self, x, y):
         if self.__orientation == 0:
@@ -234,11 +234,56 @@ class MiniTouch(Touch):
             x, y = y, self.__width - x
         return x, y
 
-    def click(self, x: int, y: int, duration: int = 100):
-        self.__tap([(x, y)], duration=duration)
+    async def click(self, x: int, y: int, duration: int = 100):
+        await self.__tap([(x, y)], duration=duration)
 
-    def swipe(self, points: list, duration: int = 300):
-        self.__swipe(points, duration=duration / (len(points) - 1))
+    async def swipe(self, points: list, duration: int = 300):
+        await self.__swipe(points, duration=duration / (len(points) - 1))
+
+    async def pinch(self, start1, start2, end1, end2, duration: int = 300, pressure: int = 100):
+        """
+        双指缩放（捏合/放大）操作
+        :param start1: 第一指起始点 (x1, y1)
+        :param start2: 第二指起始点 (x2, y2)
+        :param end1: 第一指目标点 (x1', y1')
+        :param end2: 第二指目标点 (x2', y2')
+        :param duration: 缩放过程总时长(ms)
+        :param pressure: 触摸压力
+        """
+        start1 = self.__convert(*start1)
+        start2 = self.__convert(*start2)
+        end1 = self.__convert(*end1)
+        end2 = self.__convert(*end2)
+
+        steps = 10
+        step_duration = duration // steps
+
+        x1s = [start1[0] + (end1[0] - start1[0]) * i / steps for i in range(steps + 1)]
+        y1s = [start1[1] + (end1[1] - start1[1]) * i / steps for i in range(steps + 1)]
+        x2s = [start2[0] + (end2[0] - start2[0]) * i / steps for i in range(steps + 1)]
+        y2s = [start2[1] + (end2[1] - start2[1]) * i / steps for i in range(steps + 1)]
+
+        _builder = CommandBuilder()
+
+        # 两指按下
+        _builder.down(0, int(x1s[0]), int(y1s[0]), pressure)
+        _builder.down(1, int(x2s[0]), int(y2s[0]), pressure)
+        _builder.commit()
+        await _builder.publish(self)
+
+        # 移动
+        for i in range(1, steps + 1):
+            _builder.move(0, int(x1s[i]), int(y1s[i]), pressure)
+            _builder.move(1, int(x2s[i]), int(y2s[i]), pressure)
+            _builder.wait(step_duration)
+            _builder.commit()
+            await _builder.publish(self)
+
+        # 抬起
+        _builder.up(0)
+        _builder.up(1)
+        _builder.commit()
+        await _builder.publish(self)
 
     def __del__(self):
         self.stop()
