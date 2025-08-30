@@ -223,24 +223,7 @@ class MiniTouch(Touch):
             _builder.up(point_id)
             await _builder.publish(self)
 
-    def __convert(self, x, y):
-        if self.__orientation == 0:
-            pass
-        elif self.__orientation == 1:
-            x, y = self.__height - y, x
-        elif self.__orientation == 2:
-            x, y = self.__width - x, self.__height - y
-        elif self.__orientation == 3:
-            x, y = y, self.__width - x
-        return x, y
-
-    async def click(self, x: int, y: int, duration: int = 100):
-        await self.__tap([(x, y)], duration=duration)
-
-    async def swipe(self, points: list, duration: int = 300):
-        await self.__swipe(points, duration=duration / (len(points) - 1))
-
-    async def pinch(self, start1, start2, end1, end2, duration: int = 300, pressure: int = 100):
+    async def __pinch(self, start1, start2, end1, end2, duration: int = 300, pressure: int = 100):
         """
         双指缩放（捏合/放大）操作
         :param start1: 第一指起始点 (x1, y1)
@@ -284,6 +267,26 @@ class MiniTouch(Touch):
         _builder.up(1)
         _builder.commit()
         await _builder.publish(self)
+
+    def __convert(self, x, y):
+        if self.__orientation == 0:
+            pass
+        elif self.__orientation == 1:
+            x, y = self.__height - y, x
+        elif self.__orientation == 2:
+            x, y = self.__width - x, self.__height - y
+        elif self.__orientation == 3:
+            x, y = y, self.__width - x
+        return x, y
+
+    async def click(self, x: int, y: int, duration: int = 100):
+        await self.__tap([(x, y)], duration=duration)
+
+    async def swipe(self, points: list, duration: int = 300):
+        await self.__swipe(points, duration=duration / (len(points) - 1))
+
+    async def pinch(self, start1, start2, end1, end2, duration: int = 300, pressure: int = 100):
+        await self.__pinch(start1, start2, end1, end2, duration=duration, pressure=pressure)
 
     def __del__(self):
         self.stop()
