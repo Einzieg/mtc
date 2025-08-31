@@ -12,7 +12,7 @@ from mtc.touch import Touch
 
 class MuMuTouch(Touch):
     MUMU_API_DLL_PATH = r"\shell\sdk\external_renderer_ipc.dll"
-    MUMU_12_5_API_DLL_PATH = r"\nx_device\12.0\shell\sdk\external_renderer_ipc.dll"
+    MUMU_12_5_API_DLL_PATH = r"nx_main\sdk\external_renderer_ipc.dll"
 
     def __init__(
             self,
@@ -35,18 +35,19 @@ class MuMuTouch(Touch):
         self.display_id = display_id
         self.instance_index = instance_index
         self.emulator_install_path = emulator_install_path or get_mumu_path()
-        if not os.path.exists(emulator_install_path + "uninstall.exe"):
+        uninstall_path = os.path.join(self.emulator_install_path, "uninstall.exe")
+        if not os.path.exists(uninstall_path):
             raise FileNotFoundError("模拟器安装目录下未找到卸载程序，当前安装路径不正确!")
-        self.dllPath = dll_path or self.emulator_install_path + self.MUMU_API_DLL_PATH
+        self.dllPath = dll_path or os.path.join(self.emulator_install_path, self.MUMU_API_DLL_PATH)
         if not os.path.exists(self.dllPath):
-            self.dllPath = self.emulator_install_path + self.MUMU_12_5_API_DLL_PATH
+            self.dllPath = os.path.join(self.emulator_install_path, self.MUMU_12_5_API_DLL_PATH)
         if not os.path.exists(self.dllPath):
             raise FileNotFoundError("external_renderer_ipc.dll not found!")
 
         self.width: int = 0
         self.height: int = 0
 
-        self.nemu = MuMuApi(self.dll_path)
+        self.nemu = MuMuApi(self.dllPath)
         # 连接模拟器
         self.handle = self.nemu.connect(self.emulator_install_path, self.instance_index)
         self.get_display_info()
