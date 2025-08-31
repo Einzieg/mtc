@@ -24,3 +24,6 @@ class ADBTouch(Touch):
         start_x, start_y = points[0]
         end_x, end_y = points[-1]
         self.__adb.swipe(start_x, start_y, end_x, end_y, duration / 1000)
+
+    def pinch(self, start1, start2, end1, end2, duration: int = 300, pressure: int = 100):
+        pass

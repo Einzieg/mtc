@@ -79,6 +79,9 @@ class MuMuTouch(Touch):
             await asyncio.sleep(duration / len(points) / 1000)
         self.nemu.input_event_touch_up(self.handle, self.display_id)
 
+    async def pinch(self, start1, start2, end1, end2, duration: int = 300, pressure: int = 100):
+        pass
+
     def __del__(self):
         self.nemu.disconnect(self.handle)
 
