@@ -18,4 +18,4 @@ packages = ["src/mtc"]
 
 [tool.uv.sources]
 mtc-base = { workspace = true }
-mmumu = { git = "https://github.com/NakanoSanku/mmumu" }
+mmumu = { git = "https://github.com/Einzieg/mmumu" }
